@@ -1,0 +1,754 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>PV Research Group</title>
+		<link rel="stylesheet" href="{% static 'solarpvstyle.css' %}">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+     	<link href = "https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel = "stylesheet">
+     	<link href="https://emoji-css.afeld.me/emoji.css" rel="stylesheet">
+		<script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+		<script type="text/javascript">
+			//Whenever you're ready!
+			$(document).ready(function() {
+				$(".product_container").show();
+				$(".client_container").hide();
+				$(".test_container").hide();
+				$(".cert_container").hide();
+
+				$(function() {
+				    $( "#published_date" ).datepicker();
+				});
+				$(function() {
+				    $( "#issue_date" ).datepicker();
+				});
+				//NAV
+				//Content dropdowns on hover
+				$(".nav #nav_list li .dropdown_nav, .hidden_nav").hover(function() {
+					let dropdown_pointer = $(this).attr('id');
+					$(".nav #nav_list li #" + dropdown_pointer).show();
+				}, function() {
+					$(".nav #nav_list li .hidden_nav").hide();
+				});
+
+				//This, when the user scrolls, allows the navigation to stay at the top but hide the logo
+				//PRE: Get the offset position of the navbar
+				//Errors with this include page size changes
+				var sticky = $(".nav").offset().top;
+				$(window).scroll(function() {
+					if (window.pageYOffset >= sticky * 0.9) {
+					  $(".nav").addClass("sticky")
+					} else {
+					  $(".nav").removeClass("sticky");
+					}
+				});
+
+				//change visibility of forms
+				$("#product_title").click(function() {
+					$(".product_container").show();
+					$(".client_container").hide();
+					$(".test_container").hide();
+					$(".cert_container").hide();
+				});
+
+				$("#client_title").click(function() {
+					$(".product_container").hide();
+					$(".client_container").show();
+					$(".test_container").hide();
+					$(".cert_container").hide();
+				});
+
+				$("#test_title").click(function() {
+					$(".product_container").hide();
+					$(".client_container").hide();
+					$(".test_container").show();
+					$(".cert_container").hide();
+				});
+
+				$("#cert_title").click(function() {
+					$(".product_container").hide();
+					$(".client_container").hide();
+					$(".test_container").hide();
+					$(".cert_container").show();
+				});
+
+				//populate product table
+				$.ajax({
+					cache: false,
+					url: '../api/products/?format=json',
+					type: 'GET',
+					success: function(data) {
+						document.getElementById("product_display_body").innerHTML = "";
+						data.forEach(el => {
+							var _tr = document.createElement('tr');
+							
+							var _td = document.createElement('td');
+							_td.innerHTML = el.model_number
+
+							var _td2 = document.createElement('td');
+							
+							var _a = document.createElement('a');
+							_a.innerHTML = el.product_name;
+							_a.addEventListener('click', function(){ productData(el.product_name) });
+							_td2.appendChild(_a);
+
+							_tr.appendChild(_td);
+							_tr.appendChild(_td2);
+
+							document.getElementById("product_display_body").appendChild(_tr);
+						});
+					}
+				});
+
+				//update if something is typed into the text box
+				document.getElementById("product_input").oninput = function() {
+					console.log(document.getElementById("product_input").value);
+					$.ajax({
+						cache: false,
+						url: '../api/products/?format=json',
+						type: 'GET',
+						success: function(data) {
+							document.getElementById("product_display_body").innerHTML = "";
+							data.forEach(el => {
+								var input = document.getElementById("product_input").value;
+								if (toString(el.model_number).includes(input) ||
+									el.product_name.includes(input) ||
+									input == "") {
+									var _tr = document.createElement('tr');
+									
+									var _td = document.createElement('td');
+									_td.innerHTML = el.model_number
+
+									var _td2 = document.createElement('td');
+									
+									var _a = document.createElement('a');
+									_a.innerHTML = el.product_name;
+									_a.addEventListener('click', function(){ productData(el.product_name) });
+									_td2.appendChild(_a);
+
+									_tr.appendChild(_td);
+									_tr.appendChild(_td2);
+
+									document.getElementById("product_display_body").appendChild(_tr);
+								}
+							});
+						}
+					});
+				}
+
+				//on click information
+				function productData(inst) {
+					$.ajax({
+						cache: false,
+						url: '../api/products/?format=json',
+						type: 'GET',
+						success: function(data) {
+							data.forEach(el => {
+								if (el.product_name == inst) {
+									document.getElementById("model_num").value = el.model_number;
+									document.getElementById("product_name").value = el.product_name;
+									document.getElementById("cell_tech").value = el.cell_technology;
+									document.getElementById("cell_num").value = el.number_cells;
+									document.getElementById("cell_num_series").value = el.number_cells_series;
+									document.getElementById("num_series_string").value = el.number_series;
+									document.getElementById("num_bypass_diodes").value = el.number_diodes;
+									document.getElementById("length").value = el.product_length;
+									document.getElementById("width").value = el.product_width;
+									document.getElementById("weight").value = el.product_weight;
+									document.getElementById("superstrate_type").value = el.superstrate_type;
+									document.getElementById("superstrate_manufacturer").value = el.superstrate_manufacturer;
+									document.getElementById("substrate_type").value = el.substrate_type;
+									document.getElementById("substrate_manufacturer").value = el.substrate_manufacturer;
+									document.getElementById("frame_material").value = el.frame_type;
+									document.getElementById("frame_adhesive").value = el.frame_adhesive;
+									document.getElementById("encapsulant_type").value = el.encapsulant_type;
+									document.getElementById("encapsulant_manufacturer").value = el.encapsulant_manufacturer;
+									document.getElementById("junction_type").value = el.junction_box_type;
+									document.getElementById("junction_manufacturer").value = el.junction_box_manufacturer;
+								}
+							});
+						}
+					});
+				};
+
+				//populate client table
+				$.ajax({
+					cache: false,
+					url: '../api/clients/?format=json',
+					type: 'GET',
+					success: function(data) {
+						document.getElementById("client_display_body").innerHTML = "";
+						data.forEach(el => {
+							var _tr = document.createElement('tr');
+							
+							var _td = document.createElement('td');
+							_td.innerHTML = el.client_type
+
+							var _td2 = document.createElement('td');
+							
+							var _a = document.createElement('a');
+							_a.innerHTML = el.client_name;
+							_a.addEventListener('click', function(){ clientData(el.client_name) });
+							_td2.appendChild(_a);
+
+							_tr.appendChild(_td);
+							_tr.appendChild(_td2);
+
+							document.getElementById("client_display_body").appendChild(_tr);
+						});
+					}
+				});
+
+				//update if something is typed into the text box
+				document.getElementById("client_input").oninput = function() {
+					console.log(document.getElementById("client_input").value);
+					$.ajax({
+						cache: false,
+						url: '../api/clients/?format=json',
+						type: 'GET',
+						success: function(data) {
+							document.getElementById("client_display_body").innerHTML = "";
+							data.forEach(el => {
+								if (el.client_name.includes(input) ||
+									el.client_type.includes(input) ||
+									input == "") {
+									var _tr = document.createElement('tr');
+									
+									var _td = document.createElement('td');
+									_td.innerHTML = el.client_type
+
+									var _td2 = document.createElement('td');
+									
+									var _a = document.createElement('a');
+									_a.innerHTML = el.client_name;
+									_a.addEventListener('click', function(){ clientData(el.client_name) });
+									_td2.appendChild(_a);
+
+									_tr.appendChild(_td);
+									_tr.appendChild(_td2);
+
+									document.getElementById("client_display_body").appendChild(_tr);
+								}
+							});
+						}
+					});
+				}
+
+				//on click information
+				function clientData(inst) {
+					$.ajax({
+						cache: false,
+						url: '../api/clients/?format=json',
+						type: 'GET',
+						success: function(data) {
+							data.forEach(el => {
+								if (el.client_name == inst) {
+									document.getElementById("client_name").value = el.client_name;
+									document.getElementById("client_type").value = el.client_type;
+									document.getElementById("address_1").value = el.address_1;
+									document.getElementById("address_2").value = el.address_2;
+									document.getElementById("city").value = el.city;
+									document.getElementById("state").value = el.state;
+									document.getElementById("zipcode").value = el.zipcode;
+									document.getElementById("country").value = el.country;
+									document.getElementById("phone_number").value = el.phone_number;
+									document.getElementById("fax_number").value = el.fax_number;
+								}
+							});
+						}
+					});
+				};
+
+				//populate test table
+				$.ajax({
+					cache: false,
+					url: '../api/standards/?format=json',
+					type: 'GET',
+					success: function(data) {
+						document.getElementById("test_display_body").innerHTML = "";
+						data.forEach(el => {
+							var _tr = document.createElement('tr');
+
+							var _td = document.createElement('td');
+							
+							var _a = document.createElement('a');
+							_a.innerHTML = el.standard_name;
+							_a.addEventListener('click', function(){ testData(el.standard_name) });
+							_td.appendChild(_a);
+
+							_tr.appendChild(_td);
+
+							document.getElementById("test_display_body").appendChild(_tr);
+						});
+					}
+				});
+
+				//update if something is typed into the text box
+				document.getElementById("test_input").oninput = function() {
+					console.log(document.getElementById("test_input").value);
+					$.ajax({
+						cache: false,
+						url: '../api/standards/?format=json',
+						type: 'GET',
+						success: function(data) {
+							document.getElementById("test_display_body").innerHTML = "";
+							data.forEach(el => {
+								if (el.standard_name.includes(input) ||
+									input == "") {
+									var _tr = document.createElement('tr');
+
+									var _td = document.createElement('td');
+									
+									var _a = document.createElement('a');
+									_a.innerHTML = el.standard_name;
+									_a.addEventListener('click', function(){ testData(el.standard_name) });
+									_td.appendChild(_a);
+
+									_tr.appendChild(_td);
+
+									document.getElementById("test_display_body").appendChild(_tr)
+								};
+							});
+						}
+					});
+				}
+
+				//on click information
+				function testData(inst) {
+					$.ajax({
+						cache: false,
+						url: '../api/standards/?format=json',
+						type: 'GET',
+						success: function(data) {
+							data.forEach(el => {
+								if (el.standard_name == inst) {
+									document.getElementById("standard_name").value = el.standard_name;
+									document.getElementById("description").value = el.description;
+								}
+							});
+						}
+					});
+				};
+
+				//populate certification table
+				$.ajax({
+					cache: false,
+					url: '../api/certificates/?format=json',
+					type: 'GET',
+					success: function(data) {
+						document.getElementById("certificate_display_body").innerHTML = "";
+						data.forEach(el => {
+							var _tr = document.createElement('tr');
+							
+							var _td = document.createElement('td');
+							_td.innerHTML = el.report_number
+
+							var _td2 = document.createElement('td');
+							
+							var _a = document.createElement('a');
+							_a.innerHTML = el.certificate_number;
+							_a.addEventListener('click', function(){ certData(el.certificate_number) });
+							_td2.appendChild(_a);
+
+							_tr.appendChild(_td);
+							_tr.appendChild(_td2);
+
+							document.getElementById("certificate_display_body").appendChild(_tr);
+						});
+					}
+				});
+
+				//update if something is typed into the text box
+				document.getElementById("certificate_input").oninput = function() {
+					console.log(document.getElementById("certificate_input").value);
+					$.ajax({
+						cache: false,
+						url: '../api/certificates/?format=json',
+						type: 'GET',
+						success: function(data) {
+							document.getElementById("certificate_display_body").innerHTML = "";
+							data.forEach(el => {
+								if (el.certificate_number.includes(input) ||
+									toString(el.report_number).includes(input) ||
+									input == "") {
+									var _tr = document.createElement('tr');
+									
+									var _td = document.createElement('td');
+									_td.innerHTML = el.report_number
+
+									var _td2 = document.createElement('td');
+									
+									var _a = document.createElement('a');
+									_a.innerHTML = el.certificate_number;
+									_a.addEventListener('click', function(){ certData(el.certificate_number) });
+									_td2.appendChild(_a);
+
+									_tr.appendChild(_td);
+									_tr.appendChild(_td2);
+
+									document.getElementById("certificate_display_body").appendChild(_tr);
+								}
+							});
+						}
+					});
+				}
+
+				//on click information
+				function certData(inst) {
+					$.ajax({
+						cache: false,
+						url: '../api/certificates/?format=json',
+						type: 'GET',
+						success: function(data) {
+							data.forEach(el => {
+								if (el.certificate_number == inst) {
+									document.getElementById("certificate_number").value = el.certificate_number;
+									document.getElementById("report_number").value = el.report_number;
+									document.getElementById("id_user_name").value = el.user_name;
+									document.getElementById("id_standard_id").value = el.standard_id;
+									document.getElementById("id_model_number").value = el.model_number;
+								}
+							});
+						}
+					});
+				};
+			});
+		</script>
+	</head>
+	<body>
+		<!-- The page header, with title, slogan, logo -->
+		<div class="header">
+			<div class="left_block">
+				<a href="{% url 'index' %}">
+					<img src="{% static 'pvrgLogo.svg' %}" alt="PV Research Group">
+				</a>
+			</div>
+			<div class="right_block">
+				<p><em>Making a better tomorrow through better solar systems</em></p>
+			</div>
+		</div>
+
+		<!-- The page navigation, with multiple links to other pages -->
+		<div class="nav">
+			<!-- Basic navigation list, inline -->
+			<ul id="nav_list">
+				<li>
+					<a href="#">Racks & Trackers</a>
+				</li>
+				<li>
+					<a href="#" class="dropdown_nav" id="pv_module">PV Module</a>
+					<!-- Hidden social media links in 'Contact' link -->
+					<ul class="hidden_nav" id="pv_module">
+						<li><a href="{% url 'find_cert' %}">Testing & Certification</a></li>
+						<br>
+						<li><a href="#">PV Rating</a></li>
+					</ul>
+				</li>
+				<li>
+					<a href="#" class="dropdown_nav" id="pv_system">PV Systems</a>
+					<!-- Hidden social media links in 'Contact' link -->
+					<ul class="hidden_nav" id="pv_system">
+						<li><a href="#">Monitoring & Inspection</a></li>
+						<br>
+						<li><a href="#">Performance Analysis</a></li>
+						<br>
+						<li><a href="#">Compare Systems</a></li>
+						<br>
+						<li><a href="#">Certification</a></li>
+					</ul>
+				</li>
+				<li>
+					<a href="#" class="dropdown_nav" id="data_analytics">Data Analytics</a>
+					<!-- Hidden social media links in 'Contact' link -->
+					<ul class="hidden_nav" id="data_analytics">
+						<li><a href="#">Module Lifetime Prediction</a></li>
+						<br>
+						<li><a href="#">Energy Production</a></li>
+					</ul>
+				</li>
+				<li>
+					<a href="#">Cybersecurity</a>
+				</li>
+				<li>
+					<a href="#">Solar PV University</a>
+				</li>
+			</ul>
+		</div>
+
+		<!-- extra forms to fill out by the user -->
+		<div class="dashboard_page">
+			<div id="dashboard_forms">
+				
+					
+				<a href="#" id="product_title"><em>Product</em></a>
+				<a href="#" id="client_title"><em>Client</em></a>
+				<a href="#" id="test_title"><em>Test Standard</em></a>
+				<a href="#" id="cert_title"><em>Certificate</em></a>
+				<br>
+				<div class="product_container">
+					<table id="product_display">
+						<thead>
+							<tr>
+								<td>Search Keyword</td>
+								<td><input type="text" id="product_input"></td>
+							</tr>
+							<tr>
+								<td><em>Model number</em></td>
+								<td><em>Product Name</em></td>
+							</tr>
+						</thead>
+						<tbody id="product_display_body">
+
+						</tbody>
+					</table>
+					<form id="product" method="POST" action="{% url 'product' %}">
+						{% csrf_token %}
+						<table>
+							<tr>
+								<td>Model Number</td>
+								<td>{{ product.model_num }}</td>
+							</tr>
+							<tr>
+								<td>Product Name</td>
+								<td>{{ product.product_name }}</td>
+							</tr>
+							<tr>
+								<td>Cell Technology</td>
+								<td>{{ product.cell_tech }}</td>
+							</tr>
+							<tr>
+								<td>Cell Number</td>
+								<td>{{ product.cell_num }}</td>
+							</tr>
+							<tr>
+								<td>Cell Number (in series)</td>
+								<td>{{ product.cell_num_series }}</td>
+							</tr>
+							<tr>
+								<td>Number of Series Strings</td>
+								<td>{{ product.num_series_string }}</td>
+							</tr>
+							<tr>
+								<td>Number of Bypass Diodes</td>
+								<td>{{ product.num_bypass_diodes }}</td>
+							</tr>
+							<tr>
+								<td>Length</td>
+								<td>{{ product.length }}</td>
+							</tr>
+							<tr>
+								<td>Width</td>
+								<td>{{ product.width }}</td>
+							</tr>
+							<tr>
+								<td>Weight</td>
+								<td>{{ product.weight }}</td>
+							</tr>
+							<tr>
+								<td>Superstrate Type</td>
+								<td>{{ product.superstrate_type }}</td>
+							</tr>
+							<tr>
+								<td>Superstrate Manufacturer</td>
+								<td>{{ product.superstrate_manufacturer }}</td>
+							</tr>
+							<tr>
+								<td>Substrate Type</td>
+								<td>{{ product.substrate_type }}</td>
+							</tr>
+							<tr>
+								<td>Substrate Manufacturer</td>
+								<td>{{ product.substrate_manufacturer }}</td>
+							</tr>
+							<tr>
+								<td>Frame Material</td>
+								<td>{{ product.frame_material }}</td>
+							</tr>
+							<tr>
+								<td>Frame Adhesive</td>
+								<td>{{ product.frame_adhesive }}</td>
+							</tr>
+							<tr>
+								<td>Encapsulant Type</td>
+								<td>{{ product.encapsulant_type }}</td>
+							</tr>
+							<tr>
+								<td>Encapsulant Manufacturer</td>
+								<td>{{ product.encapsulant_manufacturer }}</td>
+							</tr>
+							<tr>
+								<td>Junction Box Type</td>
+								<td>{{ product.junction_type }}</td>
+							</tr>
+							<tr>
+								<td>Junction Box Manufacturer</td>
+								<td>{{ product.junction_manufacturer }}</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td><button id="product_submit" type="Submit">Submit</td>
+							</tr>
+						</table>
+					</form>
+				</div>
+				<div class="client_container">
+					<table id="client_display">
+						<thead>
+							<tr>
+								<td>Search Keyword</td>
+								<td><input type="text" id="client_input"></td>
+							</tr>
+							<tr>
+								<td><em>Client Name</em></td>
+								<td><em>Client Type</em></td>
+							</tr>
+						</thead>
+						<tbody id="client_display_body">
+
+						</tbody>
+					</table>
+					<form id="client" method="POST" action="{% url 'client' %}">
+						{% csrf_token %}
+						<table>
+							<tr>
+								<td>Client Name</td>
+								<td>{{ client.client_name }}</td>
+							</tr>
+							<tr>
+								<td>Client Type</td>
+								<td>{{ client.client_type }}</td>
+							</tr>
+							<tr>
+								<td>Street Address</td>
+								<td>{{ client.address_1 }}</td>
+							</tr>
+							<tr>
+								<td>Address 2</td>
+								<td>{{ client.address_2 }}</td>
+							</tr>
+							<tr>
+								<td>City</td>
+								<td>{{ client.city }}</td>
+							</tr>
+							<tr>
+								<td>State (US)</td>
+								<td>{{ client.state }}</td>
+							</tr>
+							<tr>
+								<td>Zipcode</td>
+								<td>{{ client.zipcode }}</td>
+							</tr>
+							<tr>
+								<td>Country</td>
+								<td>{{ client.country }}</td>
+							</tr>
+							<tr>
+								<td>Phone Number</td>
+								<td>{{ client.phone_number }}</td>
+							</tr>
+							<tr>
+								<td>Fax Number</td>
+								<td>{{ client.fax_number }}</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td><button id="client_submit" type="Submit">Submit</td>
+							</tr>
+						</table>
+					</form>
+				</div>
+				<div class="test_container">
+					<table id="test_display">
+						<thead>
+							<tr>
+								<td>Search Keyword <input type="text" id="test_input"></td>
+							</tr>
+							<tr>
+								<td><em>Test Name</em></td>
+							</tr>
+						</thead>
+						<tbody id="test_display_body">
+
+						</tbody>
+					</table>
+					<form id="test" method="POST" action="{% url 'test_standard' %}">
+						{% csrf_token %}
+						<table>
+							<tr>
+								<td>Standard Name</td>
+								<td>{{ test.standard_name }}</td>
+							</tr>
+							<tr>
+								<td>Description</td>
+								<td>{{ test.description }}</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td><button id="test_submit" type="Submit">Submit</td>
+							</tr>
+						</table>
+					</form>
+				</div>
+				<div class="cert_container">
+					<table id="certificate_display">
+						<thead>
+							<tr>
+								<td>Search Keyword</td>
+								<td><input type="text" id="certificate_input"></td>
+							</tr>
+							<tr>
+								<td><em>Certificate Number</em></td>
+								<td><em>Report Number</em></td>
+							</tr>
+						</thead>
+						<tbody id="certificate_display_body">
+
+						</tbody>
+					</table>
+					<form id="certificate" method="POST" action="{% url 'certificate' %}">
+						{% csrf_token %}
+						<table>
+							<tr>
+								<td>Certificate Number</td>
+								<td>{{ cert.certificate_number }}</td>
+							</tr>
+							<tr>
+								<td>Report Number</td>
+								<td>{{ cert.report_number }}</td>
+							</tr>
+							<tr>
+								<td>User Name</td>
+								<td>{{ cert.user_name }}</td>
+							</tr>
+							<tr>
+								<td>Standard</td>
+								<td>{{ cert.standard_id }}</td>
+							</tr>
+							<tr>
+								<td>Model Number</td>
+								<td>{{ cert.model_number }}</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td><button id="cert_submit" type="Submit">Submit</td>
+							</tr>
+						</table>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<!-- The page footer, with copyright information and other contact links -->
+		<div class="footer">
+			<h4>PV Research Group</h4>
+			<p>©2020 All Rights Reserved</p>
+			<br>
+			<h4>Contact Us</h4>
+			<ul>
+				<li>1234 Sunny Lane, Spartanburg, SC, 29302</li>
+				<li>| (864)-507-7344 |</li>
+				<li>questions@pvrg.com</li>
+			</ul>
+		</div>
+	</body>
+</html>

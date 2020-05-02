@@ -1,0 +1,304 @@
+/* css for IFT458 deliverable */
+
+body {
+	background-color: #eefcff;
+	font-family: "Courier New", Courier, monospace;
+	font-size: 20px;
+	margin: 0px;
+}
+
+a {
+	color: black;
+	cursor: pointer;
+	text-decoration: none;
+}
+
+a:hover {
+	cursor: pointer;
+	font-weight: bold;
+}
+
+table, th, td {
+	border: none;
+	border-collapse: collapse;
+}
+
+/* div class breakdown */
+/* HEADER */
+.header {
+	background-image: url("../static/topBanner.jpg");
+	background-size: cover;
+	display: inline-block;
+	min-height: 120px;
+	position: relative;
+	width: 100%;
+}
+
+.header .left_block {
+	float: left;
+	padding: 24px 32px;
+}
+
+.header .left_block img {
+	width: 196px;
+}
+
+.header .right_block {
+	color: #cccde5;
+	float: left;
+	font-weight: bold;
+	padding: 70px 16px;
+}
+
+.header .right_block a {
+	float: inherit;
+	margin: 0px;
+	width: 120px;
+}
+
+.header .right_block #hidden_content {
+	float: inherit;
+	list-style: none;
+	margin: 0px;
+	width: 120px;
+}
+
+/* NAV */
+.nav {
+	background-color: #abb7dd;
+	display: inline-block;
+	margin: 0px;
+	padding: 8px;
+	width: 100%;
+}
+
+.nav #sign_in {
+	float: right;
+	padding: 0px 32px;
+}
+
+.nav #nav_list {
+	float: left;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.nav #nav_list li {
+	display: inline-block;
+	float: left;
+	margin-right: 24px;
+}
+
+.nav #nav_list .hidden_nav {
+	background-color: #abb7dd;
+	box-shadow: 4px 4px #8995bb;
+	display: none;
+	padding: 0px 8px;
+	position: absolute;
+}
+
+.nav #nav_list .hidden_nav li {
+	display: block;
+}
+
+/* STICKY NAV */
+.sticky {
+	position: fixed;
+	top: 0;
+}
+
+/* CONTENT */
+.content {
+	display: inline-block;
+	width: 100%;
+}
+
+.content .content_center {
+	display: block;
+	float: left;
+	width: 70%;
+}
+
+.content .content_right {
+	display: block;
+	float: right;
+	width: 20%;
+}
+
+.content .content_center #slideshow {
+	background-image: url("../static/pvGoat.jpg");
+	background-size: cover;
+	clear: both;
+	display: inherit;
+	min-height: 240px;
+	position: relative;
+	width: 100%;
+	z-index:-1;
+}
+
+.content .content_center #slideshow #next {
+	bottom: 0px;
+	position: absolute;
+	right: 0px;
+}
+
+/* DASHBOARD */
+.dashboard_page #dashboard_forms {
+	font-size:16px;
+	text-align: left;
+	margin-left: 5vw;
+	width: 90vw;
+}
+
+.dashboard_page #dashboard_forms a {
+	font-size:16px;
+	cursor: pointer;
+}
+
+.dashboard_page #dashboard_forms form {
+	font-size:16px;
+}
+
+.product_container {
+	display: grid;
+	grid-column: 50% 50%;
+	grid-template-areas: 
+		"input display";
+}
+
+.product_container #product_display {
+	grid-area: display;
+}
+
+.product_container #product {
+	grid-area: input;
+}
+
+.cert_container {
+	display: grid;
+	grid-column: 50% 50%;
+	grid-template-areas: 
+		"input display";
+}
+
+.cert_container #certificate_display {
+	grid-area: display;
+}
+
+.cert_container #certificate {
+	grid-area: input;
+}
+
+.client_container {
+	display: grid;
+	grid-column: 45% 55%;
+	grid-template-areas: 
+		"input display";
+}
+
+.client_container #client_display {
+	grid-area: display;
+}
+
+.client_container #client {
+	grid-area: input;
+}
+
+.test_container {
+	display: grid;
+	grid-column: 45% 55%;
+	grid-template-areas: 
+		"input display";
+}
+
+.test_container #test_display {
+	grid-area: display;
+}
+
+.test_container #test {
+	grid-area: input;
+}
+
+/* SIGN IN AND REGISTRATOIN */
+.sign_in_form #sign_in_form {
+	background-color: #8995bb;
+	border: none;
+	display: none;
+	min-height: 30%;
+	left: 25vw;
+	top: 25vh;
+	position: absolute;
+	text-align: center;
+	width: 50vw;
+}
+
+.sign_in_form #sign_in_close {
+	position: absolute;
+	right: 4px;
+}
+
+.sign_in_form #sign_in_form form {
+	margin-left: 10%;
+	margin-right: 10%;
+	width: 80%;
+}
+
+.sign_in_form #sign_in_form table {
+	text-align: center;
+	width: 100%;
+}
+
+.registration_page #registration_form {
+	align-content: center;
+	margin-top: 0;
+	text-align: center;
+}
+
+.registration_page #registration_form form table {
+	margin-left: 25vw;
+	width: 50vw;
+}
+
+.registration_page #registration_form a, h4 {
+	margin-bottom: 2%;
+	margin-top: 5%;
+}
+
+/* CERTIFICATION LOOKUP */
+.certification_page #certification_search table {
+	border: 1px solid gray;
+	text-align: center;
+	margin-left: 35vw;
+	width: 30vw;
+}
+
+.certification_page #certification_display table {
+	border: 1px solid gray;
+	border-collapse: collapse;
+	text-align: left;
+	margin-left: 5vw;
+	width: 90vw;
+}
+
+.certification_page #certification_display table th, td {
+	border: 1px solid gray;
+	padding: 4px;
+}
+
+/* FOOTER */
+.footer {
+	background-color: #abb7dd;
+	font-size: 12px;
+	padding: 8px;
+	text-align: center;
+	width: 100%;
+}
+
+.footer h4, p, ul {
+	margin: 0px auto;
+}
+
+.footer li {
+	display: inline-block;
+	margin: 0px 4px;
+}
